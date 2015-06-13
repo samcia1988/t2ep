@@ -3,8 +3,8 @@
 	<serverContext>/</serverContext>
 	<proxies>
 		<proxy>
-			<source>/shareprovider</source>
-			<sink>http://127.0.0.1:8082/shareprovider</sink>
+			<source>/t2ep</source>
+			<sink>http://www.gkkxd.com</sink>
 		</proxy>
 	</proxies>
 </t2ep>

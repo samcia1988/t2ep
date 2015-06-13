@@ -61,9 +61,11 @@ public class ProxyMojo extends AbstractMojo {
         String codePath = (String) this.project.getCompileSourceRoots().get(0);
         String[] paths = codePath.split("/");
         if (Objects.equals(paths[paths.length - 1], "java")) {
+        	// Unix case.
             paths[paths.length - 1] = "resources";
         } else {
-            // TODO The other detections.
+        	// Windows case.
+            return codePath.replace("src\\main\\java", "src\\main\\resources\\");
         }
         String resourcesPath = "";
         for (int i = 0; i < paths.length; i++) {
