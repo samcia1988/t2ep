@@ -18,7 +18,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 /**
  *
- * @author Ranger 2015年6月11日
+ * @author Ranger 2015骞�6鏈�11鏃�
  */
 @SuppressWarnings("restriction")
 class ProxyHttpHandler implements HttpHandler {
@@ -130,12 +130,14 @@ class ProxyHttpHandler implements HttpHandler {
                 }
             }
             // connection.setRequestMethod(httpExchange.getRequestMethod());
+            connection.setRequestProperty(HttpConsts.Headers.X_FORWARDED_FOR, url.getProtocol()+"://"+url.getHost()+":"+url.getPort());
             connection.connect();
 
             Headers returnHeaders = httpExchange.getResponseHeaders();
             if (returnHeaders == null) {
                 returnHeaders = new Headers();
-            }
+            }            
+            
             for (String fieldName : connection.getHeaderFields().keySet()) {
                 String fieldValue = connection.getHeaderField(fieldName);
                 logger.info("Response FieldName:" + fieldName);
@@ -157,11 +159,13 @@ class ProxyHttpHandler implements HttpHandler {
             InputStream is = connection.getInputStream();
             Scanner sc = new Scanner(is);
             while (sc.hasNextLine()) {
-                returnResponseString.append(sc.nextLine());
+            	String nextLine=sc.nextLine();
+                returnResponseString.append(nextLine);
             }
 
             sc.close();
-            is.close();
+            is.close();                        
+            
             connection.disconnect();
 
         } catch (Exception e) {
