@@ -4,7 +4,7 @@
 	<proxies>
 		<proxy>
 			<source>/t2ep</source>
-			<sink>http://www.tuniu.com</sink>
+			<sink>http://localhost:8088/simple</sink>
 		</proxy>
 	</proxies>
 </t2ep>

@@ -17,4 +17,9 @@ public class HttpConsts {
 		public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 	}
 
+	public static class Methods {
+		public static final String GET = "GET";
+		public static final String POST = "POST";
+	}
+
 }
