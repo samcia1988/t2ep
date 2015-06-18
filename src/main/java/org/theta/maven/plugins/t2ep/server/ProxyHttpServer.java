@@ -49,7 +49,7 @@ public class ProxyHttpServer {
 
 	private void hold() {
 		// TODO better holdings.
-		/*- Some JREs doesn't support this holding.Use simple while-true-loop before figure it out.
+		/*- Some JREs doesn't support this holding.Use simple while-true-loop before figure it out.*/
 		Runnable holdingRun = new Runnable() {
 		    @Override
 		    public void run() {
@@ -65,7 +65,7 @@ public class ProxyHttpServer {
 		Thread holdingThread = new Thread(holdingRun);
 		holdingThread.setDaemon(true);
 		holdingThread.start();
-		 */
+		/*
 		while (true) {
 			try {
 				Thread.sleep(1000l);
@@ -73,6 +73,7 @@ public class ProxyHttpServer {
 				e.printStackTrace();
 			}
 		}
+		*/
 	}
 
 }
