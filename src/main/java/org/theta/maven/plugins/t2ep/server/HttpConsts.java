@@ -17,11 +17,14 @@ public class HttpConsts {
 		public static final String REFERER = "Referer";
 
 		public static final String X_FORWARDED_FOR = "X-Forwarded-For";
+		
+		public static final String USER_AGENT="User-agent";
 
 	}
 	
 	public static class Headers_Default_Value{
 		public static final String CONTENT_TYPE="text/html; charset=UTF8";
+		public static final String USER_AGENT="T2EP-PROXY";
 	}
 
 	public static class Methods {

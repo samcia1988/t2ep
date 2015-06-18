@@ -147,6 +147,8 @@ class ProxyHttpHandler implements HttpHandler {
                 }
                 if (Objects.equals(fieldName, HttpConsts.Headers.COOKIE)) {
                     connection.setRequestProperty(fieldName, fieldValueString);
+                } else if (Objects.equals(fieldName, HttpConsts.Headers.USER_AGENT)) {
+                    connection.setRequestProperty(fieldName, HttpConsts.Headers_Default_Value.USER_AGENT);
                 }
             }
             connection.setRequestMethod(httpExchange.getRequestMethod());
