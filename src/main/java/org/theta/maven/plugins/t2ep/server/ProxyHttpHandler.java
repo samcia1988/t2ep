@@ -45,7 +45,7 @@ class ProxyHttpHandler implements HttpHandler {
 
     public void handle(HttpExchange httpExchange) throws IOException {
 
-        String requestUriPath = httpExchange.getRequestURI().getPath();
+        String requestUriPath = httpExchange.getRequestURI().toString();
 
         byte[] responseBytes = null;
         if (requestUriPath.contains(PROXY_REGISTRY)) {
@@ -110,6 +110,7 @@ class ProxyHttpHandler implements HttpHandler {
             Scanner originSc = new Scanner(originIs);
             while (originSc.hasNextLine()) {
                 String nextLine = originSc.nextLine();
+                originRequestBody += nextLine;
                 logger.info("Origin Input:" + nextLine);
             }
             originSc.close();
