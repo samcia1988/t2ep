@@ -2,7 +2,7 @@ package org.theta.maven.plugins.t2ep.server;
 
 /**
  *
- * @author Ranger 2015骞�6鏈�11鏃�
+ * @author Ranger 2015/06/11
  */
 public class HttpConsts {
 

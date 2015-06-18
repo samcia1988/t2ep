@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  *
- * @author Ranger 2015年6月11日
+ * @author Ranger 2015/06/11
  */
 public class XmlUtils {
 

@@ -6,7 +6,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  *
- * @author Ranger 2015年6月11日
+ * @author Ranger 2015/06/11
  */
 @XStreamAlias("t2ep")
 public class ConfigData {
