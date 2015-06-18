@@ -11,3 +11,5 @@ buildNumber.properties
 .settings
 .classpath
 
+/target/
+/target/

@@ -1,10 +1,11 @@
 <t2ep>
 	<serverPort>8080</serverPort>
 	<serverContext>/</serverContext>
+	<daemonHolding>false</daemonHolding>
 	<proxies>
 		<proxy>
-			<source>/t2ep</source>
-			<sink>http://127.0.0.1:8088/simple</sink>
+			<source>/kxf-portal</source>
+			<sink>http://127.0.0.1:9808/kxf-portal</sink>
 		</proxy>
 	</proxies>
 </t2ep>

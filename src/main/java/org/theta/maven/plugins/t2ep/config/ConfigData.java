@@ -17,8 +17,19 @@ public class ConfigData {
     @XStreamAlias("serverContext")
     private String          serverContext = null;
 
+    @XStreamAlias("daemonHolding")
+    private Boolean         daemonHolding;
+
     @XStreamAlias("proxies")
     private List<ProxyData> proxies;
+
+    public Boolean getDaemonHolding() {
+        return daemonHolding;
+    }
+
+    public void setDaemonHolding(Boolean daemonHolding) {
+        this.daemonHolding = daemonHolding;
+    }
 
     public int getServerPort() {
         return serverPort;
@@ -49,6 +60,7 @@ public class ConfigData {
         builder.append("{");
         builder.append("serverPort:").append(serverPort).append(",");
         builder.append("serverContext:").append(serverContext).append(",");
+        builder.append("daemonHolidng:").append(daemonHolding).append(",");
         builder.append("proxies:");
         if (proxies != null) {
             for (ProxyData proxy : proxies) {

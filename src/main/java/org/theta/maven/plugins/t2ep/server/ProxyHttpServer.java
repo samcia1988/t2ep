@@ -11,69 +11,68 @@ import com.sun.net.httpserver.spi.*;
 
 /**
  *
- * @author Ranger 2015骞�6鏈�10鏃�
+ * @author Ranger 2015/06/10
  */
 public class ProxyHttpServer {
 
-	private static ProxyHttpServer proxyHttpServer = new ProxyHttpServer();
+    private static ProxyHttpServer proxyHttpServer = new ProxyHttpServer();
 
-	private ConfigData config = null;
+    private ConfigData             config          = null;
 
-	private Log logger = null;
+    private Log                    logger          = null;
 
-	private ProxyHttpServer() {
-	}
+    private ProxyHttpServer() {
+    }
 
-	public static ProxyHttpServer getInstance(ConfigData config, Log log) {
-		proxyHttpServer.config = config;
-		proxyHttpServer.logger = log;
-		return proxyHttpServer;
-	}
+    public static ProxyHttpServer getInstance(ConfigData config, Log log) {
+        proxyHttpServer.config = config;
+        proxyHttpServer.logger = log;
+        return proxyHttpServer;
+    }
 
-	@SuppressWarnings("restriction")
-	public void httpserverService() throws IOException {
-		HttpServerProvider provider = HttpServerProvider.provider();
-		HttpServer httpserver = provider.createHttpServer(
-				new InetSocketAddress(config.getServerPort()), 100);
+    @SuppressWarnings("restriction")
+    public void httpserverService() throws IOException {
+        HttpServerProvider provider = HttpServerProvider.provider();
+        HttpServer httpserver = provider.createHttpServer(new InetSocketAddress(config.getServerPort()), 100);
 
-		ProxyHttpHandler handler = new ProxyHttpHandler(config.getProxies(),
-				logger);
-		httpserver.createContext(config.getServerContext(), handler);
-		httpserver.setExecutor(null);
-		httpserver.start();
-		logger.info("Server started.");
-		logger.info("Port:" + config.getServerPort());
-		logger.info("Context:" + config.getServerContext());
-		hold();
-	}
+        ProxyHttpHandler handler = new ProxyHttpHandler(config.getProxies(), logger);
+        httpserver.createContext(config.getServerContext(), handler);
+        httpserver.setExecutor(null);
+        httpserver.start();
+        logger.info("Server started.");
+        logger.info("Port:" + config.getServerPort());
+        logger.info("Context:" + config.getServerContext());
+        hold();
+    }
 
-	private void hold() {
-		// TODO better holdings.
-		/*- Some JREs doesn't support this holding.Use simple while-true-loop before figure it out.*/
-		Runnable holdingRun = new Runnable() {
-		    @Override
-		    public void run() {
-		        while (true) {
-		            try {
-		                Thread.sleep(1000l);
-		            } catch (InterruptedException e) {
-		                e.printStackTrace();
-		            }
-		        }
-		    }
-		};
-		Thread holdingThread = new Thread(holdingRun);
-		holdingThread.setDaemon(true);
-		holdingThread.start();
-		/*
-		while (true) {
-			try {
-				Thread.sleep(1000l);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		*/
-	}
+    private void hold() {
+        // TODO better holdings.
+        /*- Some JREs doesn't support this holding.Use simple while-true-loop before figure it out.*/
+        if (this.config.getDaemonHolding()) {
+            Runnable holdingRun = new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            Thread.sleep(1000l);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            };
+            Thread holdingThread = new Thread(holdingRun);
+            holdingThread.setDaemon(true);
+            holdingThread.start();
+        } else {
+            while (true) {
+                try {
+                    Thread.sleep(1000l);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
 }

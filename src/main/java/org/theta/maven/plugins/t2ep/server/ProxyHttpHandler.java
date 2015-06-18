@@ -1,5 +1,7 @@
 package org.theta.maven.plugins.t2ep.server;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,24 +21,22 @@ import com.sun.net.httpserver.HttpHandler;
 
 /**
  *
- * @author Ranger 2015骞�6鏈�11鏃�
+ * @author Ranger 2015/06/11
  */
 @SuppressWarnings("restriction")
 class ProxyHttpHandler implements HttpHandler {
 
-    private List<ProxyData>     proxies;
+    private List<ProxyData>    proxies;
 
-    private Log                 logger             = null;
+    private Log                logger             = null;
 
-    public static final String  PROXY_REGISTRY     = "ProxyRegistr";
+    public static final String PROXY_REGISTRY     = "ProxyRegistr";
 
-    public static final String  PROXY_REGISTRY_OK  = "OK";
+    public static final String PROXY_REGISTRY_OK  = "OK";
 
-    public static final String  PROXY_SPLIT_INNER  = ",";
+    public static final String PROXY_SPLIT_INNER  = ",";
 
-    public static final String  PROXY_SPLIT_OUTTER = ";";
-
-    private static final String ENCODE_UTF8        = "UTF8";
+    public static final String PROXY_SPLIT_OUTTER = ";";
 
     public ProxyHttpHandler(List<ProxyData> proxies, Log logger) {
         this.logger = logger;
@@ -47,25 +47,25 @@ class ProxyHttpHandler implements HttpHandler {
 
         String requestUriPath = httpExchange.getRequestURI().getPath();
 
-        StringBuffer responseString = new StringBuffer();
+        byte[] responseBytes = null;
         if (requestUriPath.contains(PROXY_REGISTRY)) {
-            doRegistry(requestUriPath, responseString, httpExchange);
+            responseBytes = doRegistry(requestUriPath, httpExchange);
         } else {
-            doProxy(requestUriPath, responseString, httpExchange);
+            responseBytes = doProxy(requestUriPath, httpExchange);
         }
 
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK,
-                responseString.toString().getBytes(ENCODE_UTF8).length);
+        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, responseBytes != null ? responseBytes.length : 0);
 
         OutputStream responseBody = httpExchange.getResponseBody();
 
-        responseBody.write(responseString.toString().getBytes(ENCODE_UTF8));
+        responseBody.write(responseBytes);
         responseBody.close();
 
-        logger.info("Response:\n" + responseString);
+        // logger.info("Response:\n" + responseString);
     }
 
-    private void doRegistry(String requestUriPath, StringBuffer responseString, HttpExchange httpExchange) {
+    byte[] doRegistry(String requestUriPath, HttpExchange httpExchange) {
+        byte[] returnResponseByte = null;
         logger.info("Request URI Path:" + requestUriPath);
         StringBuilder requestBody = new StringBuilder();
         try {
@@ -90,16 +90,18 @@ class ProxyHttpHandler implements HttpHandler {
             }
             logger.info("New registed proxies size:" + this.proxies.size());
             httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK,
-                    ProxyHttpHandler.PROXY_REGISTRY_OK.getBytes(ENCODE_UTF8).length);
+                    ProxyHttpHandler.PROXY_REGISTRY_OK.getBytes().length);
             OutputStream os = httpExchange.getResponseBody();
-            os.write(ProxyHttpHandler.PROXY_REGISTRY_OK.getBytes(ENCODE_UTF8));
+            os.write(ProxyHttpHandler.PROXY_REGISTRY_OK.getBytes());
             os.close();
+            return returnResponseByte;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private void doProxy(String requestUriPath, StringBuffer returnResponseString, HttpExchange httpExchange) {
+    byte[] doProxy(String requestUriPath, HttpExchange httpExchange) {
+        byte[] returnResponseByte = null;
         logger.info("Request URI Path:" + requestUriPath);
 
         String originRequestBody = "";
@@ -153,7 +155,7 @@ class ProxyHttpHandler implements HttpHandler {
             if (Objects.equals(httpExchange.getRequestMethod(), HttpConsts.Methods.POST)) {
                 connection.setDoOutput(true);
                 OutputStream connectionOs = connection.getOutputStream();
-                connectionOs.write(originRequestBody.getBytes(ENCODE_UTF8));
+                connectionOs.write(originRequestBody.getBytes());
                 connectionOs.close();
             }
             connection.connect();
@@ -169,32 +171,14 @@ class ProxyHttpHandler implements HttpHandler {
                 logger.info("Response FieldValue:" + fieldValue);
                 if (Objects.equals(fieldName, HttpConsts.Headers.SET_COOKIE)) {
                     returnHeaders.add(fieldName, fieldValue);
-                } else if (Objects.equals(fieldName,
-                        HttpConsts.Headers.CONTENT_TYPE)) {
+                } else if (Objects.equals(fieldName, HttpConsts.Headers.CONTENT_TYPE)) {
                     if (StringUtils.isEmpty(fieldValue)) {
-                        returnHeaders.add(fieldName,
-                                HttpConsts.Headers_Default_Value.CONTENT_TYPE);
+                        returnHeaders.add(fieldName, HttpConsts.Headers_Default_Value.CONTENT_TYPE);
                     } else {
                         returnHeaders.add(fieldName, fieldValue);
                     }
                 }
             }
-			for (String fieldName : connection.getHeaderFields().keySet()) {
-				String fieldValue = connection.getHeaderField(fieldName);
-				logger.info("Response FieldName:" + fieldName);
-				logger.info("Response FieldValue:" + fieldValue);
-				if (Objects.equals(fieldName, HttpConsts.Headers.SET_COOKIE)) {
-					returnHeaders.add(fieldName, fieldValue);
-				} else if (Objects.equals(fieldName,
-						HttpConsts.Headers.CONTENT_TYPE)) {
-					if (StringUtils.isEmpty(fieldValue)) {
-						returnHeaders.add(fieldName,
-								HttpConsts.Headers_Default_Value.CONTENT_TYPE);
-					} else {
-						returnHeaders.add(fieldName, fieldValue);
-					}
-				}
-			}
 
             logger.info("----------");
             logger.info("getContentType: " + connection.getContentType());
@@ -206,17 +190,18 @@ class ProxyHttpHandler implements HttpHandler {
             logger.info("----------");
 
             InputStream is = connection.getInputStream();
-            Scanner sc = new Scanner(is);
-            while (sc.hasNextLine()) {
-                String nextLine = sc.nextLine();
-                returnResponseString.append(nextLine);
+            BufferedInputStream bis = new BufferedInputStream(is);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+
+            for (int len = 0; (len = bis.read(buf)) != -1;) {
+                baos.write(buf, 0, len);
             }
 
-            sc.close();
             is.close();
-
             connection.disconnect();
-
+            returnResponseByte = baos.toByteArray();
+            return returnResponseByte;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
