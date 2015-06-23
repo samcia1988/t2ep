@@ -39,13 +39,13 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<plugin>
+<!-- 				<plugin>
 					<groupId>org.theta.maven.plugins</groupId>
 					<artifactId>t2ep</artifactId>
 					<configuration>
 						<goalPrefix>t2ep</goalPrefix>
 					</configuration>
-				</plugin>
+				</plugin> -->
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
