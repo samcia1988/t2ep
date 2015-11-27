@@ -120,9 +120,14 @@ class ProxyHttpHandler implements HttpHandler {
         }
 
         int pos = -1;
+        int maxLength = -1;
         for (int i = 0; i < this.proxies.size(); i++) {
             if (requestUriPath.startsWith(this.proxies.get(i).getSource())) {
-                pos = i;
+                int length = this.proxies.get(i).getSource().length();
+                if (length > maxLength) {
+                    pos = i;
+                    maxLength = length;
+                }
                 break;
             }
         }

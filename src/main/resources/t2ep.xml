@@ -1,22 +1,11 @@
 <t2ep>
-	<serverPort>8080</serverPort>
+	<serverPort>8081</serverPort>
 	<serverContext>/</serverContext>
 	<daemonHolding>false</daemonHolding>
 	<proxies>
 		<proxy>
-			<source>/kxf-portal</source>
-			<sink>http://172.31.100.102/kxf-portal</sink>
+			<source>/json</source>
+			<sink>http://127.0.0.1:8080/json</sink>
 		</proxy>
-		<proxy>
-			<source>/kxd-portal</source>
-			<sink>http://172.31.100.102/kxd-portal</sink>
-		</proxy>
-		<proxy>
-			<source>/cms</source>
-			<sink>http://172.31.100.102/cms</sink>
-		</proxy>
-
-		<!-- <proxy> <source>/kxf-portal</source> <sink>http://127.0.0.1:9808/kxf-portal</sink> 
-			</proxy> -->
 	</proxies>
 </t2ep>
